@@ -161,7 +161,18 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  _.reduce = function(collection, iterator, accumulator) {
+  _.reduce = function(collection, iterator, accumulation) {
+    _.each(collection, function(value, i) {
+      if(accumulation === undefined && i === 0) {
+        accumulation = collection[i];
+      } else {
+        accumulation = iterator(accumulation, collection[i])
+      }
+    })
+    return accumulation;
+    // _.each(collection, function(value, i) {
+    //   return accumulation === undefined ? collection[0] : iterator(accumulation, collection[i]);
+    // }
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -208,6 +219,7 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    
   };
 
   // Like extend, but doesn't ever overwrite a key that already
