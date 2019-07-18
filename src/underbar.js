@@ -255,6 +255,16 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var objToModify = arguments[0];
+    for(var i = 1; i < arguments.length; i++){
+      var propObj = arguments[i];
+      for(var key in propObj) {
+        if(!objToModify.hasOwnProperty(key)) {
+          objToModify[key] = propObj[key];
+        }
+      }
+    }
+    return objToModify;
   };
 
 
