@@ -97,17 +97,24 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-    
     var output = [];
     var duplicates = [];
-    _.each(array, function(val) {
-      iterator = iterator || val;
-      if (_.indexOf(output, iterator) === -1) {
-        output.push(iterator);
-        duplicates.push(val);
-      } 
-    });
-    return duplicates;
+    if (isSorted) {
+      _.each(array, function(item) {
+        iterator = iterator || item;
+        if (_.indexOf(duplicates, iterator(item)) === -1) {
+          duplicates.push(iterator(item));
+          output.push(item);
+        }
+      });
+    } else {
+      _.each(array, function(item) {
+        if (_.indexOf(output, item) === -1) {
+          output.push(item);
+        }
+      });
+    }
+    return output;
   };
 
 
@@ -144,19 +151,19 @@
   // Reduces an array or object to a single value by repetitively calling
   // iterator(accumulator, item) for each item. accumulator should be
   // the return value of the previous iterator call.
-  //  
+  //
   // You can pass in a starting value for the accumulator as the third argument
   // to reduce. If no starting value is passed, the first element is used as
   // the accumulator, and is never passed to the iterator. In other words, in
   // the case where a starting value is not passed, the iterator is not invoked
   // until the second element, with the first element as its second argument.
-  //  
+  //
   // Example:
   //   var numbers = [1,2,3];
   //   var sum = _.reduce(numbers, function(total, number){
   //     return total + number;
   //   }, 0); // should be 6
-  //  
+  //
   //   var identity = _.reduce([5], function(total, number){
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
@@ -170,9 +177,6 @@
       }
     })
     return accumulation;
-    // _.each(collection, function(value, i) {
-    //   return accumulation === undefined ? collection[0] : iterator(accumulation, collection[i]);
-    // }
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -190,15 +194,6 @@
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    // TIP: Try re-using reduce() here.
-    // var passes = true;
-    // return _.reduce(collection, function(value) {
-    //   if (iterator(value) === false) {
-    //     return false;
-    //   } else {
-    //     return true;
-    //   }
-    // }, true);
     iterator = iterator || _.identity;
     var passes = true;
     for (var i = 0; i < collection.length; i++) {
@@ -308,21 +303,16 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
-    var args = {};
-    // var counter = 0;
+    var output = {};
+
     return function() {
-      console.log(arguments);
       var parameters = JSON.stringify(arguments);
-      args[parameters] = func.apply(this, arguments);
-      // if (counter < 1) {
-        if (args.hasOwnProperty(parameters)) {
-          return args[parameters];
-        } else {
-          func.apply(this, arguments);
-        }
-      // }
-      // counter++;
+      if (!output.hasOwnProperty(parameters)) {
+        output[parameters] = func.apply(this, arguments)
+      }
+      return output[parameters];
     }
+
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -350,22 +340,15 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
-    var arr = array.slice();
-    var newArray = [];
-    // var newOrder = array.map(function(el, i) {
-    //   return Math.floor(Math.random(i));
-    // });
+    var shuffledArray = array.slice();
     for (var i = 0; i < array.length; i++) {
-      var index = Math.floor(Math.random() * Math.floor(array.length));
-      if (newArray[index] === undefined) {
-        newArray[index] = array[i];
-      } else {
-        
-      }
+      var randomIndex = Math.floor(Math.random() * i);
+      var randomItem = shuffledArray[randomIndex];
 
+      shuffledArray[randomIndex] = shuffledArray[i];
+      shuffledArray[i] = randomItem;
     }
-    
-    
+    return shuffledArray;
   };
 
 
